@@ -11,7 +11,10 @@
 #define kOverlayHeight      15
 
 #import "KIImagePager.h"
+//custom indicator
 #import "DGActivityIndicatorView.h"
+//SDWebImage with custom activity
+#import "UIImageView+UIActivityIndicatorForSDWebImage.h"
 
 @interface KIImagePagerDefaultImageSource : NSObject <KIImagePagerImageSource>
 @end
@@ -222,19 +225,35 @@
                 NSURL * imageUrl  = [[aImageUrls objectAtIndex:i] isKindOfClass:[NSURL class]] ? [aImageUrls objectAtIndex:i] : [NSURL URLWithString:(NSString *)[aImageUrls objectAtIndex:i]];
                 
                 //image source is responsible for image retreiving/caching, etc...
-                [self.imageSource imageWithUrl:imageUrl
-                                    completion:^(UIImage *image, NSError *error)
-                 {
-                     if(!error) [imageView setImage:image];//should we handle error?
-                     else [imageView setImage:nil];
-                     
-                     // Stop and Remove Activity Indicator
-                     UIActivityIndicatorView *indicatorView = (UIActivityIndicatorView *)[_activityIndicators objectForKey:[NSString stringWithFormat:@"%d", i]];
-                     if (indicatorView) {
-                         [indicatorView stopAnimating];
-                         [_activityIndicators removeObjectForKey:[NSString stringWithFormat:@"%d", i]];
-                     }
-                 }];
+                //                [self.imageSource imageWithUrl:imageUrl
+                //                                    completion:^(UIImage *image, NSError *error)
+                //                 {
+                //                     if(!error) [imageView setImage:image];//should we handle error?
+                //                     else [imageView setImage:nil];
+                //
+                //                     // Stop and Remove Activity Indicator
+                //                     UIActivityIndicatorView *indicatorView = (UIActivityIndicatorView *)[_activityIndicators objectForKey:[NSString stringWithFormat:@"%d", i]];
+                //                     if (indicatorView) {
+                //                         [indicatorView stopAnimating];
+                //                         [_activityIndicators removeObjectForKey:[NSString stringWithFormat:@"%d", i]];
+                //                     }
+                //                 }];
+                
+                //SDWebimage CACHE - robert
+                [imageView setImageWithURL:imageUrl completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                    
+                    // Stop and Remove Activity Indicator
+                    UIActivityIndicatorView *indicatorView = (UIActivityIndicatorView *)[_activityIndicators objectForKey:[NSString stringWithFormat:@"%d", i]];
+                    if (indicatorView) {
+                        [indicatorView stopAnimating];
+                        [_activityIndicators removeObjectForKey:[NSString stringWithFormat:@"%d", i]];
+                    }
+                    
+                } usingActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+                
+                
+                
+                
             }
             
             // Add GestureRecognizer to ImageView
