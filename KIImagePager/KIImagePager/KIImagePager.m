@@ -74,6 +74,7 @@
         [view removeFromSuperview];
     }
     [self initialize];
+    [self setCurrentPage:_imagePagerIndex animated:NO];
 }
 
 #pragma mark - General
